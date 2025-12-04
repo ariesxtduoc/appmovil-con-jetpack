@@ -5,8 +5,6 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
 }
 
-
-
 android {
     namespace = "com.example.appmovil"
     compileSdk = 36
@@ -57,29 +55,20 @@ android {
     }
 }
 
-
-
-
 dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.compose.material3:material3:1.2.1")
-
-
     implementation("androidx.compose.material:material-icons-extended:1.6.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
 
     // Navigation Compose
     implementation("androidx.navigation:navigation-compose:2.7.2")
 
-// Material3
-    implementation("androidx.compose.material3:material3:1.2.1")
-
-// Compose UI
+    // Compose UI
     implementation("androidx.compose.ui:ui:1.5.0")
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.0")
     debugImplementation("androidx.compose.ui:ui-tooling:1.5.0")
-
 
     // CORE
     implementation(libs.androidx.core.ktx)
@@ -111,7 +100,6 @@ dependencies {
     // =============================
     //        UNIT TESTS
     // =============================
-
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.11.1")
     testImplementation("io.mockk:mockk:1.13.9")
@@ -120,7 +108,6 @@ dependencies {
     // =============================
     //        UI TESTS
     // =============================
-
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
@@ -137,7 +124,11 @@ dependencies {
     // GOOGLE MAPS
     implementation("com.google.android.gms:play-services-maps:18.2.0")
 
-// GOOGLE LOCATION SERVICES
+    // GOOGLE LOCATION SERVICES
     implementation("com.google.android.gms:play-services-location:21.0.1")
 
+    // =============================
+    // MAPS COMPOSE (IMPORTANTE)
+    // =============================
+    implementation("com.google.maps.android:maps-compose:2.14.0")
 }
