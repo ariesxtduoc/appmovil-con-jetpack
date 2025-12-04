@@ -1,64 +1,68 @@
 package com.example.appmovil.ui.cart
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import java.net.URLDecoder
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun OrderSummaryScreen(
     navController: NavController,
-    onConfirm: () -> Unit   // ⭐ SE AGREGA ESTE PARÁMETRO
+    total: String,
+    productsEncoded: String
 ) {
-
-    val exampleItems = listOf("Producto 1", "Producto 2", "Producto 3")
-    val total = "$15.990"
+    val decodedProducts = URLDecoder.decode(productsEncoded, StandardCharsets.UTF_8.toString())
+    val productsList = if (decodedProducts.isNotEmpty()) {
+        decodedProducts.split("|")
+    } else emptyList()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text("Resumen de la Compra")
+        Text("Resumen de compra", style = MaterialTheme.typography.headlineMedium)
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
-            items(exampleItems) { item ->
-                Text(item, modifier = Modifier.padding(6.dp))
-            }
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Lista de productos
+        productsList.forEach { item ->
+            Text(text = "- $item")
         }
 
-        Text(
-            text = "Total: $total",
-            modifier = Modifier.padding(vertical = 10.dp)
-        )
+        Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
-            onClick = { navController.popBackStack() },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("← Volver")
-        }
+        Text("Total a pagar: $$total", style = MaterialTheme.typography.headlineSmall)
+
+        Spacer(modifier = Modifier.height(28.dp))
 
         Button(
             onClick = {
-                // ⬇️ Ahora usamos el callback enviado desde MainActivity
-                onConfirm()
+                val encodedProducts =
+                    URLEncoder.encode(productsList.joinToString("|"), StandardCharsets.UTF_8.toString())
+
+                navController.navigate("purchase_complete/$total/$encodedProducts")
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Finalizar compra")
+            Text("Confirmar compra")
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedButton(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Volver")
         }
     }
 }

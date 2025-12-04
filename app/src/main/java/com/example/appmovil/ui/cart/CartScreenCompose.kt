@@ -12,12 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun CartScreenCompose(
     userId: String,
     onBack: () -> Unit,
-    onPay: () -> Unit,
+    navController: NavController,
     viewModel: CartViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -33,14 +36,12 @@ fun CartScreenCompose(
             .padding(16.dp)
     ) {
 
-        // 🔙 VOLVER
         Button(onClick = onBack) {
             Text("◀ Volver")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 🛒 LISTA
         LazyColumn(
             modifier = Modifier.weight(1f)
         ) {
@@ -67,29 +68,38 @@ fun CartScreenCompose(
                         }
                     },
                     onDelete = {
-                        viewModel.removeItem(
-                            context,
-                            userId,
-                            item.product.id
-                        )
-
+                        viewModel.removeItem(context, userId, item.product.id)
                         Toast.makeText(context, "Producto eliminado", Toast.LENGTH_SHORT).show()
                     }
                 )
             }
         }
 
-        // 💵 TOTAL
+        val total = items.sumOf { it.product.price * it.quantity }
+
         Text(
-            text = "Total: $${viewModel.getTotal()}",
+            text = "Total: $$total",
             style = MaterialTheme.typography.headlineSmall
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // PAGAR
         Button(
-            onClick = onPay,
+            onClick = {
+                if (items.isEmpty()) {
+                    Toast.makeText(context, "El carrito está vacío", Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+
+                // 🔥 Codificar la info para enviarla por navegación
+                val raw = items.joinToString("|") {
+                    "${it.product.name};${it.quantity};${it.product.price}"
+                }
+
+                val encoded = URLEncoder.encode(raw, StandardCharsets.UTF_8.toString())
+
+                navController.navigate("orderSummary/$total/$encoded")
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Pagar")
